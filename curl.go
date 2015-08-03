@@ -163,6 +163,15 @@ func optIntv(opts []interface{}) (intv time.Duration) {
 	return
 }
 
+func optStrings(name string, opts []interface{}) (got bool, s []string) {
+	var val interface{}
+	got, val = optGet(name, opts)
+	if got {
+		s = val.([]string)
+	}
+	return
+}
+
 func optString(name string, opts []interface{}) (got bool, s string) {
 	var val interface{}
 	got, val = optGet(name, opts)
@@ -370,7 +379,7 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 	var req *http.Request
 	var cb IoCopyCb
 
-	hasPEM, rootPEM := optString("rootPEM=", opts)
+	hasPEM, rootPEM := optStrings("rootPEM=", opts)
 
 	hasmet, method := optString("method=", opts)
 	if !hasmet {
