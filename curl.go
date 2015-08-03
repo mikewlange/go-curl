@@ -2,8 +2,8 @@ package curl
 
 import (
 	"bytes"
-	"crypto/x509"
 	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"io"
@@ -16,7 +16,7 @@ import (
 )
 
 const (
-rootPEM = `
+	rootPEM = `
 -----BEGIN CERTIFICATE-----
 MIIEBDCCAuygAwIBAgIDAjppMA0GCSqGSIb3DQEBBQUAMEIxCzAJBgNVBAYTAlVT
 MRYwFAYDVQQKEw1HZW9UcnVzdCBJbmMuMRswGQYDVQQDExJHZW9UcnVzdCBHbG9i
@@ -41,7 +41,6 @@ HFa9llF7b1cq26KqltyMdMKVvvBulRP/F/A8rLIQjcxz++iPAsbw+zOzlTvjwsto
 WHPbqCRiOwY1nQ2pM714A5AuTHhdUDqB1O6gyHA43LL5Z/qHQF1hwFGPa4NrzQU6
 yuGnBXj8ytqU0CwIPX4WecigUCAkVDNx
 -----END CERTIFICATE-----`
-
 )
 
 // IoCopyStat is a struct that contains all information about the IoCopy progress.
@@ -64,6 +63,10 @@ type IoCopyStat struct {
 	RedirectTo string         // redirect url (only available at Stat == "redirect")
 	Intv       int64          //cb interval
 }
+
+var (
+	roots *x509.connPools = nil
+)
 
 // Control is a Controller for a curl operation.
 type Control struct {
@@ -380,10 +383,18 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 		reqBody = rbdy.(io.Reader)
 	}
 
-	tlsActive := func (s, substr string) bool {
-			s, substr = strings.ToUpper(s), strings.ToUpper(substr)
-				return strings.Contains(s, substr)
-			}(url, "https")
+	tlsActive := func(s, substr string) bool {
+		s, substr = strings.ToUpper(s), strings.ToUpper(substr)
+		return strings.Contains(s, substr)
+	}(url, "https")
+
+	if tlsActive {
+		roots = x509.NewCertPool()
+		ok := roots.AppendCertsFromPEM([]byte(rootPEM))
+		if !ok {
+			panic("failed to parse root certificate")
+		}
+	}
 
 	method = strings.ToUpper(method)
 	req, err = http.NewRequest(method, url, reqBody)
@@ -425,44 +436,41 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 	if !hasdiscomp {
 		disablecompression = false
 	}
-	tr := &http.Transport{
-		DisableCompression: disablecompression,
-		Dial: func(network, addr string) (c net.Conn, e error) {
-			if hasdto {
-				if tlsActive {
-					// TODO
-					roots := x509.NewCertPool()
-					ok := roots.AppendCertsFromPEM([]byte(rootPEM))
-					if !ok {
-						panic("failed to parse root certificate")
-					}
 
-					c, e = tls.Dial("tcp", "mail.google.com:443", &tls.Config{
+	if tlsActive {
+		tr := &http.Transport{
+			DisableCompression: disablecompression,
+			DialTLS: func(network, addr string) (c net.Conn, e error) {
+				// TODO timeout...
+				if hasdto {
+
+					c, e = tls.Dial(network, addr, &tls.Config{
 						RootCAs: roots,
 					})
 				} else {
-					c, e = net.DialTimeout(network, addr, dto)
-				}
-			} else {
-				if tlsActive {
-					// TODO
-					roots := x509.NewCertPool()
-					ok := roots.AppendCertsFromPEM([]byte(rootPEM))
-					if !ok {
-						panic("failed to parse root certificate")
-					}
-
-					c, e = tls.Dial("tcp", "mail.google.com:443", &tls.Config{
+					c, e = tls.Dial(network, addr, &tls.Config{
 						RootCAs: roots,
 					})
+				}
+				return
+			},
+			RootCAs:            roots,
+			InsecureSkipVerify: true,
+			// ServerName:         "beaqs.com",
+		}
+	} else {
+		tr := &http.Transport{
+			DisableCompression: disablecompression,
+			Dial: func(network, addr string) (c net.Conn, e error) {
+				if hasdto {
+					c, e = net.DialTimeout(network, addr, dto)
 				} else {
 					c, e = net.Dial(network, addr)
 				}
-			}
-			return
-		},
+				return
+			},
+		}
 	}
-
 	hasfolred, followredirects := optBool("followredirects=", opts)
 	if !hasfolred {
 		followredirects = true
