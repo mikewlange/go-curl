@@ -441,8 +441,9 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 		disablecompression = false
 	}
 
+	var tr http.Transport
 	if tlsActive {
-		tr := &http.Transport{
+		tr = &http.Transport{
 			DisableCompression: disablecompression,
 			DialTLS: func(network, addr string) (c net.Conn, e error) {
 				// TODO timeout...
@@ -462,7 +463,7 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 			},
 		}
 	} else {
-		tr := &http.Transport{
+		tr = &http.Transport{
 			DisableCompression: disablecompression,
 			Dial: func(network, addr string) (c net.Conn, e error) {
 				if hasdto {
