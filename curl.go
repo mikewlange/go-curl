@@ -449,17 +449,17 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 				if hasdto {
 
 					c, e = tls.Dial(network, addr, &tls.Config{
-						RootCAs: roots,
+						RootCAs:            roots,
+						InsecureSkipVerify: true,
 					})
 				} else {
 					c, e = tls.Dial(network, addr, &tls.Config{
-						RootCAs: roots,
+						RootCAs:            roots,
+						InsecureSkipVerify: true,
 					})
 				}
 				return
 			},
-			RootCAs:            roots,
-			InsecureSkipVerify: true,
 		}
 	} else {
 		tr := &http.Transport{
