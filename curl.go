@@ -165,6 +165,7 @@ func optIntv(opts []interface{}) (intv time.Duration) {
 
 func optString(name string, opts []interface{}) (got bool, s string) {
 	var val interface{}
+	fmt.Printf("*** LOOKING FOR %s\n", name)
 	got, val = optGet(name, opts)
 	if got {
 		s = fmt.Sprintf("%v", val)
