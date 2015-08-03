@@ -390,9 +390,11 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 	if tlsActive {
 		roots = x509.NewCertPool()
 		if hasPEM {
-			ok := roots.AppendCertsFromPEM([]byte(rootPEM))
-			if !ok {
-				panic("failed to parse root certificate")
+			for i := 0; i < len(rootPEM); i++ {
+				ok := roots.AppendCertsFromPEM([]byte(rootPEM[i]))
+				if !ok {
+					panic("failed to parse root certificate")
+				}
 			}
 		}
 	}
