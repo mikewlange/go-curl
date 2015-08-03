@@ -1,8 +1,8 @@
-# go-curl
+# go-curl with SSL and Self-Signed Cert Support
 
 ## Documentation:
 
-http://godoc.org/github.com/christophwitzko/go-curl
+http://godoc.org/github.com/rabarar/go-curl
 
 ## Options
 
