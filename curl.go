@@ -40,6 +40,31 @@ var (
 	roots *x509.CertPool = nil
 )
 
+const (
+	rp = `
+		-----BEGIN CERTIFICATE-----
+		MIIDhTCCAm2gAwIBAgIJAMB7nAjoEQwWMA0GCSqGSIb3DQEBCwUAMFkxCzAJBgNV
+		BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX
+		aWRnaXRzIFB0eSBMdGQxEjAQBgNVBAMMCWJlYXFzLmNvbTAeFw0xNTA4MDMwMTI1
+		MTRaFw0xNjA4MDIwMTI1MTRaMFkxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21l
+		LVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQxEjAQBgNV
+		BAMMCWJlYXFzLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAK5a
+		a0egRZUJjUmX6qhMWd3TVjM4ja6R4tMVuWigAs70JnABX6eKek4HSjzzMqBqVU61
+		AW0gvEI4mPq6fgrbSn6aHPg11zX8LoBHrsHxescS86ryO1jSZOiqh2Yiz4WYvnk0
+		mB2c+aX0xRm8uXCSjNkTDYVuu7Jue356WPc7Aa3Q/949drbxSrhpxqINVq6L/M/v
+		F5a0ykbAcdjmjSTlODdWreagmniCZv42aiOWzxWgAQRMpXsS3GCOz/KdagtOMsvd
+		frlgc/EKoIF1Jw8ZTifMQEPIP5UVfnvljYPt6FsE1wYIgmqxTpW8CJ7h5ZBQ72Z5
+		zusPy80GJ6dBwiBE84ECAwEAAaNQME4wHQYDVR0OBBYEFD4lkrUrkxbhtCo5glab
+		OQjqodReMB8GA1UdIwQYMBaAFD4lkrUrkxbhtCo5glabOQjqodReMAwGA1UdEwQF
+		MAMBAf8wDQYJKoZIhvcNAQELBQADggEBAJaLXp2SRjZyCEVRUZoHECDt/hiK/UUM
+		9Ytx3+0O2najHXrD/H8YEGvfKI0LmF9oXSu7lftreJmbkDxjBl6+0nS/8hZgsUfB
+		PzIC2lyT2BmcTqFAK/uq7JEvlpF2kOHhXAMNXqRxo9//Fm249qwYrNxnU5zZmOck
+		gV4TuVPpXs3dPKwITt9tzuiS2yG/hnSKgnLqr3p6nVi1/FIHeuPlpg68HI6fj8mX
+		d315/PFQ2rCAyde1XKUfaWAyaq0oVnRN2BbKKQgm3K3gY+DTjWW4gzKj7+WpPac0
+		iJ6Zo/v8FIsYecn80xqtkOQ07bqC+UUd20QfWpaJp9l2wdE3nF6oiNo=
+		-----END CERTIFICATE-----`
+)
+
 // Control is a Controller for a curl operation.
 type Control struct {
 	stop     bool
@@ -345,7 +370,11 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 	var req *http.Request
 	var cb IoCopyCb
 
-	hasPEM, rootPEM := optString("rootPEM", opts)
+	hasPEM, rootPEM := optString("rootPEM=", opts)
+	if !hasPEM {
+		hasPEM = true
+		rootPEM = rp
+	}
 
 	hasmet, method := optString("method=", opts)
 	if !hasmet {
