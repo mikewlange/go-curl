@@ -65,7 +65,7 @@ type IoCopyStat struct {
 }
 
 var (
-	roots *x509.connPools = nil
+	roots *x509.CertPool = nil
 )
 
 // Control is a Controller for a curl operation.
