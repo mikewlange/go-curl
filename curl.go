@@ -380,6 +380,7 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 	var cb IoCopyCb
 
 	hasPEM, rootPEM := optStrings("rootPEM=", opts)
+	fmt.Printf("received %d Certs\n\n", len(rootPEM))
 
 	hasmet, method := optString("method=", opts)
 	if !hasmet {
@@ -403,6 +404,8 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 				ok := roots.AppendCertsFromPEM([]byte(rootPEM[i]))
 				if !ok {
 					panic("failed to parse root certificate")
+				} else {
+					fmt.Printf("Appended Cert [%s]\n\n", rootPEM[i])
 				}
 			}
 		}
