@@ -165,7 +165,6 @@ func optIntv(opts []interface{}) (intv time.Duration) {
 
 func optString(name string, opts []interface{}) (got bool, s string) {
 	var val interface{}
-	fmt.Printf("*** LOOKING FOR %s\n", name)
 	got, val = optGet(name, opts)
 	if got {
 		s = fmt.Sprintf("%v", val)
@@ -372,13 +371,6 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 	var cb IoCopyCb
 
 	hasPEM, rootPEM := optString("rootPEM=", opts)
-	if !hasPEM {
-		hasPEM = true
-		rootPEM = rp
-		fmt.Printf("didn't find a PEM so forcing it!!!\n")
-	} else {
-		fmt.Printf("found pem [%v]\n", rootPEM)
-	}
 
 	hasmet, method := optString("method=", opts)
 	if !hasmet {
