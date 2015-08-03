@@ -456,7 +456,6 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 			},
 			RootCAs:            roots,
 			InsecureSkipVerify: true,
-			// ServerName:         "beaqs.com",
 		}
 	} else {
 		tr := &http.Transport{
