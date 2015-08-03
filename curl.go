@@ -441,7 +441,7 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 		disablecompression = false
 	}
 
-	var tr http.Transport
+	var tr *http.Transport
 	if tlsActive {
 		tr = &http.Transport{
 			DisableCompression: disablecompression,
