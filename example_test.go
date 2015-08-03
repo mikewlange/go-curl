@@ -2,11 +2,12 @@ package curl_test
 
 import (
 	"fmt"
-	"github.com/christophwitzko/go-curl"
 	"io"
 	"net/http"
 	"strings"
 	"time"
+
+	"go-curly"
 )
 
 // Curl string or bytes.
