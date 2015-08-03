@@ -9,7 +9,7 @@ http://godoc.org/github.com/rabarar/go-curl
 | Option              | Type                        | Default       |
 |-------------------- |---------------------------- |-------------  |
 | method=             | string                      | GET           |
-| rootPEM=            | string                      | nil           |
+| rootPEM=            | []string                    | nil           |
 | data=               | io.Reader                   | nil           |
 | dialtimeout=        | time.Duration               | 0             |
 | readtimeout=        | time.Duration               | 0             |
