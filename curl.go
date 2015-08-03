@@ -375,6 +375,8 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 		hasPEM = true
 		rootPEM = rp
 		fmt.Printf("didn't find a PEM so forcing it!!!\n")
+	} else {
+		fmt.Printf("found pem [%v]\n", rootPEM)
 	}
 
 	hasmet, method := optString("method=", opts)
