@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	rootPEM = `
+	_rootPEM = `
 -----BEGIN CERTIFICATE-----
 MIIEBDCCAuygAwIBAgIDAjppMA0GCSqGSIb3DQEBBQUAMEIxCzAJBgNVBAYTAlVT
 MRYwFAYDVQQKEw1HZW9UcnVzdCBJbmMuMRswGQYDVQQDExJHZW9UcnVzdCBHbG9i
@@ -373,6 +373,8 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 	var req *http.Request
 	var cb IoCopyCb
 
+	hasPEM, rootPEM := optString("rootPEM", opts)
+
 	hasmet, method := optString("method=", opts)
 	if !hasmet {
 		method = "GET"
@@ -390,9 +392,11 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 
 	if tlsActive {
 		roots = x509.NewCertPool()
-		ok := roots.AppendCertsFromPEM([]byte(rootPEM))
-		if !ok {
-			panic("failed to parse root certificate")
+		if hasPEM {
+			ok := roots.AppendCertsFromPEM([]byte(rootPEM))
+			if !ok {
+				panic("failed to parse root certificate")
+			}
 		}
 	}
 
