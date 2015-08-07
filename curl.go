@@ -378,7 +378,7 @@ func Dial(url string, opts ...interface{}) (err error, retResp *http.Response) {
 			for i := 0; i < len(rootPEM); i++ {
 				ok := roots.AppendCertsFromPEM([]byte(rootPEM[i]))
 				if !ok {
-					return errors.New("failed to parse root certificate")
+					return errors.New("failed to parse root certificate"), nil
 				} else {
 					//fmt.Printf("Appended Cert [%s]\n\n", rootPEM[i])
 				}
